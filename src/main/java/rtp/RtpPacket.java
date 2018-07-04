@@ -371,7 +371,7 @@ public class RtpPacket implements Serializable {
     /**
      * Shrink the buffer of this packet by specified length
      *
-     * @param len length to shrink
+     * @param delta length to shrink
      */
     public void shrink(int delta)
     {
