@@ -1,8 +1,12 @@
 package pcap;
 
+import rtp.RtpPacket;
+
 import java.io.*;
 
 public class PcapLoad {
+
+    private RtpPacket rtpPacket = new RtpPacket( 172, true);
 
     private static final int[] AMR_FRAME_SIZE = new int[] {
             17, 23, 32, 36, 40, 46, 50, 58, 60
@@ -59,7 +63,13 @@ public class PcapLoad {
                 this.viewUdpHeader(udpHeader);
 
                 bis.read( rtpHeader,0,RTP_HERDER_LEN );
-                this.viewRtpHeader(rtpHeader);
+
+                rtpPacket.getBuffer().clear();
+                rtpPacket.getBuffer().rewind();
+                rtpPacket.getBuffer().put(rtpHeader);
+                rtpPacket.getBuffer().flip();
+
+                System.out.println("rtpPacket : " + rtpPacket.toString());
 
                 bis.read( cmr,0,CMR_LEN );
 
@@ -90,34 +100,6 @@ public class PcapLoad {
         for(final byte b: a)
             sb.append(String.format("%02x ", b&0xff));
         return sb.toString();
-    }
-
-    private static void viewRtpHeader(byte [] rtpHeader)
-    {
-        byte[] sequence = new byte[2];
-        System.arraycopy(rtpHeader, 2, sequence, 0, sequence.length);
-
-        long seq = toUnsignedLong(sequence);
-
-        byte[] timestampBuf = new byte[4];
-        System.arraycopy(rtpHeader, 4, timestampBuf, 0, timestampBuf.length);
-
-        long timestamp = toUnsignedInt(timestampBuf);
-
-        byte[] ssrc = new byte[4];
-        System.arraycopy(rtpHeader, 8, ssrc, 0, ssrc.length);
-
-        long ssrcInt = toUnsignedInt(ssrc);
-
-
-        byte[] payload = new byte[1];
-
-        payload[0] = (byte) (rtpHeader[1] & 0xff << 1);
-        int payloadtype =  (payload[0] & 0xff >> 1);
-
-        int mark= ((rtpHeader[1] & 0xff) >> 7) & 0x0f;
-
-        System.out.println( "amrtype :"+payloadtype+" mark :"+mark+" sequence : " + seq + " timestamp : " + timestamp + " ssrc : " + ssrcInt);
     }
 
     private static void viewUdpHeader(byte [] udpHeader)
