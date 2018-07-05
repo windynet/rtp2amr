@@ -12,10 +12,6 @@ public class PcapLoad {
     private UdpPacket udpPacket = new UdpPacket( 172, true);
     private AMRWB amrwb = new AMRWB( 172, true);
 
-    private static final int[] AMR_FRAME_SIZE = new int[] {
-            17, 23, 32, 36, 40, 46, 50, 58, 60
-    };
-
     private static final byte[] AMR_HEADER = { 0x23, 0x21, 0x41, 0x4D, 0x52, 0x2D, 0x57, 0x42, 0x0A };
 
     public void pcapFileOpen(String fileName) throws FileNotFoundException
@@ -36,8 +32,6 @@ public class PcapLoad {
         out=new FileOutputStream(new File(amffile));
         bos = new BufferedOutputStream(out);
 
-        int len;
-
         try {
             bos.write(AMR_HEADER, 0, AMR_HEADER.length);
 
@@ -46,7 +40,6 @@ public class PcapLoad {
             int ETH_HERDER_LEN = 14;
             int IP_HERDER_LEN = 20;
             int UDP_HERDER_LEN = 8;
-            int FT_LEN = 1;
             byte[] ph = new byte[PL_LEN];
             byte[] pcapHeader = new byte[PCAPHERDER_LEN];
             byte[] ethHeader = new byte[ETH_HERDER_LEN];
@@ -54,11 +47,9 @@ public class PcapLoad {
             byte[] udpHeader = new byte[UDP_HERDER_LEN];
             byte[] rtp = new byte[1024];
 
-            byte[] ft = new byte[FT_LEN];
-
             bis.read( pcapHeader,0,PCAPHERDER_LEN );
 
-            while ((len = bis.read( ph,0,PL_LEN )) >= 0) {
+            while (bis.read( ph,0,PL_LEN ) >= 0) {
                 bis.read( ethHeader,0,ETH_HERDER_LEN );
                 bis.read( ipHeader,0,IP_HERDER_LEN );
                 bis.read( udpHeader,0,UDP_HERDER_LEN );
