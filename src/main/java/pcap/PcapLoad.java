@@ -1,12 +1,16 @@
 package pcap;
 
+import Audio.AMRWB;
 import rtp.RtpPacket;
+import udp.UdpPacket;
 
 import java.io.*;
 
 public class PcapLoad {
 
-    private RtpPacket rtpPacket = new RtpPacket( 172, true);
+    private RtpPacket rtpPacket = new RtpPacket( 1024, true);
+    private UdpPacket udpPacket = new UdpPacket( 172, true);
+    private AMRWB amrwb = new AMRWB( 172, true);
 
     private static final int[] AMR_FRAME_SIZE = new int[] {
             17, 23, 32, 36, 40, 46, 50, 58, 60
@@ -42,16 +46,14 @@ public class PcapLoad {
             int ETH_HERDER_LEN = 14;
             int IP_HERDER_LEN = 20;
             int UDP_HERDER_LEN = 8;
-            int RTP_HERDER_LEN = 12;
-            int CMR_LEN = 1;
             int FT_LEN = 1;
             byte[] ph = new byte[PL_LEN];
             byte[] pcapHeader = new byte[PCAPHERDER_LEN];
             byte[] ethHeader = new byte[ETH_HERDER_LEN];
             byte[] ipHeader = new byte[IP_HERDER_LEN];
             byte[] udpHeader = new byte[UDP_HERDER_LEN];
-            byte[] rtpHeader = new byte[RTP_HERDER_LEN];
-            byte[] cmr = new byte[CMR_LEN];
+            byte[] rtp = new byte[1024];
+
             byte[] ft = new byte[FT_LEN];
 
             bis.read( pcapHeader,0,PCAPHERDER_LEN );
@@ -60,27 +62,34 @@ public class PcapLoad {
                 bis.read( ethHeader,0,ETH_HERDER_LEN );
                 bis.read( ipHeader,0,IP_HERDER_LEN );
                 bis.read( udpHeader,0,UDP_HERDER_LEN );
-                this.viewUdpHeader(udpHeader);
+                udpPacket.getBuffer().clear();
+                udpPacket.getBuffer().rewind();
+                udpPacket.getBuffer().put(udpHeader);
+                udpPacket.getBuffer().flip();
 
-                bis.read( rtpHeader,0,RTP_HERDER_LEN );
+                System.out.println("udpPacket : " + udpPacket.toString());
+
+                bis.read( rtp, 0, (int) udpPacket.getUDPLength() - udpHeader.length);
 
                 rtpPacket.getBuffer().clear();
                 rtpPacket.getBuffer().rewind();
-                rtpPacket.getBuffer().put(rtpHeader);
+                rtpPacket.getBuffer().put(rtp);
                 rtpPacket.getBuffer().flip();
 
-                System.out.println("rtpPacket : " + rtpPacket.toString());
+                int audioLength = (int) udpPacket.getUDPLength() - udpPacket.FIXED_HEADER_SIZE - rtpPacket.FIXED_HEADER_SIZE;
+                byte[] audio = new byte[audioLength];
 
-                bis.read( cmr,0,CMR_LEN );
+                rtpPacket.getPayload(audio,0, audioLength);
 
-                len = bis.read( ft,0,FT_LEN );
-                bos.write(ft, 0, len);
-                int frameType= ((ft[0] & 0xff) >> 3) & 0x0f;
-                int frameLen = AMR_FRAME_SIZE[frameType];
-                byte[] frame = new byte[frameLen];
 
-                len = bis.read( frame,0,frameLen );
-                bos.write(frame, 0, len);
+                amrwb.getBuffer().clear();
+                amrwb.getBuffer().rewind();
+                amrwb.getBuffer().put(audio);
+                amrwb.getBuffer().flip();
+
+                System.out.println("Audio : " + amrwb.getAmrDataLength() + byteArrayToHex(amrwb.getAmrData()));
+
+                bos.write(amrwb.getAmrData(), 0, amrwb.getAmrDataLength()-1);
             }
 
             bos.close();
@@ -95,7 +104,7 @@ public class PcapLoad {
         System.out.println( "Output File Name Convert End [" + amffile + "]");
     }
 
-    String byteArrayToHex(byte[] a) {
+    private static String byteArrayToHex(byte[] a) {
         StringBuilder sb = new StringBuilder();
         for(final byte b: a)
             sb.append(String.format("%02x ", b&0xff));

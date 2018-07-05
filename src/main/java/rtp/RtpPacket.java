@@ -299,14 +299,11 @@ public class RtpPacket implements Serializable {
      * @param buff the buffer used for reading
      * @param offset the initial offset inside buffer.
      */
-    public void getPayload(byte[] buff, int offset) {
+    public void getPayload(byte[] buff, int offset,int length) {
         buffer.position(FIXED_HEADER_SIZE);
-        buffer.get(buff, offset, buffer.limit() - FIXED_HEADER_SIZE);
+        buffer.get(buff, offset, length);
     }
-    
-    public void getPayload(byte[] buff) {
-        getPayload(buff, 0);
-    }
+
     
     public void wrap(byte[] data) {
         this.buffer.clear();
