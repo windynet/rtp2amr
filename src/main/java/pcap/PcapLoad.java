@@ -101,48 +101,4 @@ public class PcapLoad {
             sb.append(String.format("%02x ", b&0xff));
         return sb.toString();
     }
-
-    private static void viewUdpHeader(byte [] udpHeader)
-    {
-
-        byte[] srcPortBuff = new byte[2];
-        System.arraycopy(udpHeader, 0, srcPortBuff, 0, srcPortBuff.length);
-        long srcPort = toUnsignedLong(srcPortBuff);
-
-        byte[] dstPortBuff = new byte[2];
-        System.arraycopy(udpHeader, 2, dstPortBuff, 0, dstPortBuff.length);
-        long dstPort = toUnsignedLong(dstPortBuff);
-
-        System.out.println( "Source Port : " + srcPort + " Dst Port : " + dstPort);
-
-        byte[] payloadLenBuff = new byte[2];
-        System.arraycopy(udpHeader, 4, payloadLenBuff, 0, payloadLenBuff.length);
-        long payloadLen = toUnsignedLong(payloadLenBuff);
-
-        System.out.println( "Source Port : " + srcPort + " Dst Port : " + dstPort + " Payload Length : " + payloadLen);
-    }
-
-    public static final long toUnsignedInt(byte[] b) {
-        long l = 0;
-
-        l |= b[0] & 0xFF;
-        l <<= 8;
-        l |= b[1] & 0xFF;
-        l <<= 8;
-        l |= b[2] & 0xFF;
-        l <<= 8;
-        l |= b[3] & 0xFF;
-
-        return l;
-    }
-
-    public static final long toUnsignedLong(byte[] b) {
-        long l = 0;
-
-        l |= b[0] & 0xFF;
-        l <<= 8;
-        l |= b[1] & 0xFF;
-
-        return l;
-    }
 }
