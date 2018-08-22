@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>acs</groupId>
-    <artifactId>pcap2amr</artifactId>
+    <artifactId>rto2amr</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
@@ -80,7 +80,7 @@
                             <descriptorRefs>
                                 <descriptorRef>jar-with-dependencies</descriptorRef>
                             </descriptorRefs>
-                            <finalName>mrud</finalName>
+                            <finalName>rtp2amr</finalName>
                             <archive>
                                 <manifest>
                                     <mainClass>rtp2amr</mainClass>
@@ -88,24 +88,24 @@
                             </archive>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>build-Emulator</id>
-                        <goals>
-                            <goal>attached</goal>
-                        </goals>
-                        <phase>package</phase>
-                        <configuration>
-                            <descriptorRefs>
-                                <descriptorRef>jar-with-dependencies</descriptorRef>
-                            </descriptorRefs>
-                            <finalName>mcud-emul</finalName>
-                            <archive>
-                                <manifest>
-                                    <mainClass>x3.player.mru.Emulator</mainClass>
-                                </manifest>
-                            </archive>
-                        </configuration>
-                    </execution>
+                    <!--<execution>-->
+                        <!--<id>build-Emulator</id>-->
+                        <!--<goals>-->
+                            <!--<goal>attached</goal>-->
+                        <!--</goals>-->
+                        <!--<phase>package</phase>-->
+                        <!--<configuration>-->
+                            <!--<descriptorRefs>-->
+                                <!--<descriptorRef>jar-with-dependencies</descriptorRef>-->
+                            <!--</descriptorRefs>-->
+                            <!--<finalName>mcud-emul</finalName>-->
+                            <!--<archive>-->
+                                <!--<manifest>-->
+                                    <!--<mainClass>x3.player.mru.Emulator</mainClass>-->
+                                <!--</manifest>-->
+                            <!--</archive>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
                 </executions>
             </plugin>
             <plugin>
