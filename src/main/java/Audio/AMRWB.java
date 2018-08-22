@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class AMRWB {
 
     private static final int[] AMR_FRAME_SIZE = new int[] {
-            17, 23, 32, 36, 40, 46, 50, 58, 60
+            17, 23, 32, 36, 40, 46, 50, 58, 60, 0
     };
 
     private static final byte[] AMR_HEADER = { 0x23, 0x21, 0x41, 0x4D, 0x52, 0x2D, 0x57, 0x42, 0x0A };
